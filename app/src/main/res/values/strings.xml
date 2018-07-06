@@ -11,8 +11,5 @@
     <string name="menu_view_list">List</string>
     <string name="menu_home">Home</string>
     <string name="menu_setting">Settings</string>
-    <string name="menu_cloud">Upload</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="fragment_home">Home</string>
+    <string name="menu_cloud">Cloud</string>
 </resources>

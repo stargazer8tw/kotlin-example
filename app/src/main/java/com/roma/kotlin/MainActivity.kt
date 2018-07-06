@@ -15,10 +15,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import com.roma.kotlin.fragments.FragmentHome
 import com.roma.kotlin.fragments.FragmentItem
+import com.roma.kotlin.fragments.FragmentChart
+import com.roma.kotlin.fragments.FragmentTool
+import com.roma.kotlin.fragments.FragmentCloud
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         FragmentHome.OnFragmentInteractionListener,
-        FragmentItem.OnListFragmentInteractionListener {
+        FragmentItem.OnListFragmentInteractionListener,
+        FragmentChart.OnFragmentInteractionListener,
+        FragmentTool.OnFragmentInteractionListener,
+        FragmentCloud.OnFragmentInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,13 +83,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 replaceFragment(FragmentItem(), R.id.fragment_container)
             }
             R.id.nav_chart -> {
-
+                replaceFragment(FragmentChart(), R.id.fragment_container)
             }
             R.id.nav_tool -> {
-
+                replaceFragment(FragmentTool(), R.id.fragment_container)
             }
             R.id.nav_cloud -> {
-
+                replaceFragment(FragmentChart(), R.id.fragment_container)
             }
         }
 
