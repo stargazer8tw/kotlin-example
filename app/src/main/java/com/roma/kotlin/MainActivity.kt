@@ -39,6 +39,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // TODO: memorize last fragment?
         addFragment(FragmentHome(), R.id.fragment_container)
+        // focus on navigation list in the drawer on create
+        nav_view.checkItem(R.id.nav_home)
     }
 
     override fun onBackPressed() {
@@ -89,6 +91,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+
+    override fun onFragmentInteraction() {
+        // TODO Implement
+    }
+
+    override fun onListFragmentInteraction() {
+        // TODO
+    }
+
     // see https://medium.com/thoughts-overflow/how-to-add-a-fragment-in-kotlin-way-73203c5a450b
     // original https://stackoverflow.com/questions/45713747/any-code-improvement-in-adding-replacing-fragment/45715022#45715022
     inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
@@ -99,17 +110,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportFragmentManager.inTransaction { add(frameId, fragment) }
     }
 
-
     fun AppCompatActivity.replaceFragment(fragment: Fragment, frameId: Int) {
         supportFragmentManager.inTransaction{replace(frameId, fragment)}
     }
+
+    // see https://stackoverflow.com/questions/43246059/how-to-set-selected-item-in-bottomnavigationview
+    internal fun NavigationView.checkItem(actionId: Int) {
+        menu.findItem(actionId)?.isChecked = true
+    }
+
     // end of example code
-
-    override fun onFragmentInteraction() {
-        // TODO Implement
-    }
-
-    override fun onListFragmentInteraction() {
-        // TODO
-    }
 }
