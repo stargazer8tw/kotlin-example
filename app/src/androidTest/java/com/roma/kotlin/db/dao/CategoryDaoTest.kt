@@ -3,6 +3,7 @@ package com.roma.kotlin.db.dao
 import android.arch.persistence.room.Room
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import android.util.Log
 
 import org.junit.After
 import org.junit.Before
@@ -21,17 +22,19 @@ class CategoryDaoTest {
 
     private lateinit var database: AppDatabase
 
-    @Before fun setup() {
+    @Before
+    fun setup() {
         // using an in-memory database because the information stored here disappears after test
-        database = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), AppDatabase::class.java).build()
+//        database = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), AppDatabase::class.java).build()
 
         // see https://medium.com/@chandilsachin/room-with-unit-test-in-kotlin-4ad31a39a291
-//        database = AppDatabase.getInstance(InstrumentationRegistry.getTargetContext())
+        database = AppDatabase.getInstance(InstrumentationRegistry.getTargetContext())
     }
 
-    @After fun tearDown() {
+    @After
+    fun tearDown() {
         database.clearAllTables()
-        database.close()
+//        database.close()
     }
 
     @Test
@@ -39,7 +42,7 @@ class CategoryDaoTest {
         // When inserting a new category in the data source
         database.categoryDao().insert(CATEGORY)
 
-        val list = database.categoryDao().getAll()
+        val list = database.categoryDao().all
         assertNotNull(list)
         assertEquals(CATEGORY.name, list.get(0).name)
     }
@@ -50,10 +53,12 @@ class CategoryDaoTest {
         database.categoryDao().insert(CATEGORY)
 
         // When we are updating the name of the user
-        val updatedCategory = Category(CATEGORY.uid, "new food", 0)
+        val updatedCategory = database.categoryDao().all.get(0)
+        Log.d("test", "id = " + updatedCategory.uid)
+        updatedCategory.name = "new food"
         database.categoryDao().insert(updatedCategory)
 
-        val list = database.categoryDao().getAll()
+        val list = database.categoryDao().all
         assertNotNull(list)
         assertEquals(updatedCategory.name, list.get(0).name)
     }
@@ -64,9 +69,9 @@ class CategoryDaoTest {
         database.categoryDao().insert(CATEGORY)
 
         //When we are deleting all category
-        database.categoryDao().delete(CATEGORY)
+        database.categoryDao().delete(database.categoryDao().all.get(0))
 
-        val list = database.categoryDao().getAll()
+        val list = database.categoryDao().all
         assertNotNull(list)
         assertEquals(0, list.size)
     }

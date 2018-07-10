@@ -25,25 +25,25 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-//        fun getInstance(context: Context): AppDatabase =
-//                INSTANCE ?: synchronized(this) {
-//                    INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
-//                }
-//
-//        private fun buildDatabase(context: Context) =
-//                Room.databaseBuilder(context.applicationContext,
-//                        AppDatabase::class.java, "roma.db")
-//                        .build()
-        @Synchronized
-        fun getInstance(context: Context): AppDatabase {
-            if (INSTANCE == null) {
-                INSTANCE = Room
-                        .databaseBuilder(context.applicationContext, AppDatabase::class.java, "example")
-                        .fallbackToDestructiveMigration()
+        fun getInstance(context: Context): AppDatabase =
+                INSTANCE ?: synchronized(this) {
+                    INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
+                }
+
+        private fun buildDatabase(context: Context) =
+                Room.databaseBuilder(context.applicationContext,
+                        AppDatabase::class.java, "roma.db")
                         .build()
-            }
-            return INSTANCE!!
-        }
+//        @Synchronized
+//        fun getInstance(context: Context): AppDatabase {
+//            if (INSTANCE == null) {
+//                INSTANCE = Room
+//                        .databaseBuilder(context.applicationContext, AppDatabase::class.java, "example")
+//                        .fallbackToDestructiveMigration()
+//                        .build()
+//            }
+//            return INSTANCE!!
+//        }
     }
 
 }
