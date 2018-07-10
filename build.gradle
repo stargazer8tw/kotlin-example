@@ -1,7 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.50'
+    ext.kotlin_version = '1.2.51'
+    // see https://codelabs.developers.google.com/codelabs/android-room-with-a-view/#2
+    ext.roomVersion = '1.1.1'
+    ext.archLifecycleVersion = '1.1.0'
     repositories {
         google()
         jcenter()
