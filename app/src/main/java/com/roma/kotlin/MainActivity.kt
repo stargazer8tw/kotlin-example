@@ -13,10 +13,12 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.fragments.FragmentHome
 import com.roma.kotlin.fragments.FragmentItem
 import com.roma.kotlin.fragments.FragmentChart
 import com.roma.kotlin.fragments.FragmentTool
+import com.roma.kotlin.fragments.FragmentCategory
 import com.roma.kotlin.fragments.FragmentCloud
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -24,7 +26,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FragmentItem.OnListFragmentInteractionListener,
         FragmentChart.OnFragmentInteractionListener,
         FragmentTool.OnFragmentInteractionListener,
-        FragmentCloud.OnFragmentInteractionListener {
+        FragmentCategory.OnListFragmentInteractionListener,
+        FragmentCloud.OnFragmentInteractionListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +91,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_tool -> {
                 replaceFragment(FragmentTool(), R.id.fragment_container)
             }
+            R.id.nav_category -> {
+                replaceFragment(FragmentCategory(), R.id.fragment_container)
+                // we don't want display fab with doing category crud
+
+            }
             R.id.nav_cloud -> {
                 replaceFragment(FragmentChart(), R.id.fragment_container)
             }
@@ -103,6 +111,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onListFragmentInteraction() {
+        // TODO
+    }
+
+    override fun onListFragmentInteraction(category: Category?) {
         // TODO
     }
 
