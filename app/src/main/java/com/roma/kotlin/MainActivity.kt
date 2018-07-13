@@ -14,6 +14,7 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import com.roma.kotlin.db.obj.Category
+import com.roma.kotlin.fragments.DialogAddCategory
 import com.roma.kotlin.fragments.FragmentHome
 import com.roma.kotlin.fragments.FragmentItem
 import com.roma.kotlin.fragments.FragmentChart
@@ -29,14 +30,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FragmentCategory.OnListFragmentInteractionListener,
         FragmentCloud.OnFragmentInteractionListener{
 
+
+    var fabAction = FAB_ACTION_ADD_ITEM
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            when (fabAction) {
+                FAB_ACTION_ADD_ITEM -> {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show()
+                }
+                FAB_ACTION_ADD_CATEGORY -> {
+                    DialogAddCategory().show(supportFragmentManager, DialogAddCategory.TAG)
+                }
+            }
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -77,6 +88,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // set fab default action
+        fabAction = FAB_ACTION_ADD_ITEM
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
@@ -93,11 +106,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_category -> {
                 replaceFragment(FragmentCategory(), R.id.fragment_container)
-                // we don't want display fab with doing category crud
-
+                fabAction = FAB_ACTION_ADD_CATEGORY
             }
             R.id.nav_cloud -> {
-                replaceFragment(FragmentChart(), R.id.fragment_container)
+                replaceFragment(FragmentCloud(), R.id.fragment_container)
             }
         }
 
@@ -116,6 +128,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onListFragmentInteraction(category: Category?) {
         // TODO
+    }
+
+    companion object {
+        const val FAB_ACTION_ADD_ITEM = 0
+        const val FAB_ACTION_ADD_CATEGORY = 1
+        const val FAB_ACTION_ADD_SUBCATEGORY = 2
     }
 
     // see https://medium.com/thoughts-overflow/how-to-add-a-fragment-in-kotlin-way-73203c5a450b
