@@ -13,11 +13,11 @@ import android.view.MenuItem
 import android.view.MenuInflater
 import android.widget.EditText
 import android.widget.Toast
+// use kotlin extension
+import kotlinx.android.synthetic.main.fragment_add_category.editCategoryName
 import com.roma.kotlin.R
 import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.MainActivity
-
-
 
 class FragmentAddCategory : DialogFragment() {
 
@@ -51,12 +51,13 @@ class FragmentAddCategory : DialogFragment() {
     }
 
     fun onSavePressed() {
-//        val inflater = activity!!.getLayoutInflater()
-//        val mView = inflater.inflate(R.layout.fragment_add_category, null)
-//        val mEditText = dialog.findViewById(R.id.editCategoryName) as EditText
-//        val mText = mEditText.text.toString()
-//        Toast.makeText(activity, mText, Toast.LENGTH_SHORT).show()
-        listener?.onSaveCategoryInteraction(Category(0, "example", 0))
+        var txt = editCategoryName.text.toString()
+        if (txt.isNullOrEmpty()) {
+            editCategoryName.error = "Category Name is empty"
+            editCategoryName.requestFocus()
+            return
+        }
+        listener?.onSaveCategoryInteraction(Category(0, editCategoryName.text.toString(), 0))
         dismiss()
     }
 

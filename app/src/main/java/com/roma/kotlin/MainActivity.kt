@@ -18,6 +18,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -152,6 +153,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onSaveCategoryInteraction(category: Category) {
+        // cannot get
+//        var editCategoryName = findViewById(R.id.editCategoryName) as EditText
+//        Toast.makeText(this, editCategoryName.text, Toast.LENGTH_SHORT).show()
         Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
         showDrawer()
     }
