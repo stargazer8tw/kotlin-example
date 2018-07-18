@@ -56,7 +56,7 @@ class FragmentAddCategory : DialogFragment() {
 //        val mEditText = dialog.findViewById(R.id.editCategoryName) as EditText
 //        val mText = mEditText.text.toString()
 //        Toast.makeText(activity, mText, Toast.LENGTH_SHORT).show()
-//        listener?.onSaveCategoryInteraction(Category(0, "example", 0))
+        listener?.onSaveCategoryInteraction(Category(0, "example", 0))
         dismiss()
     }
 
