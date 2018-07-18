@@ -17,6 +17,7 @@ import com.roma.kotlin.R
 
 import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.model.CategoryListViewModel
+import com.roma.kotlin.ext.nonNullObserve
 
 /**
  * A fragment representing a list of Items.
@@ -26,7 +27,7 @@ import com.roma.kotlin.model.CategoryListViewModel
 class FragmentCategory : Fragment() {
 
     private var columnCount = 1
-    private var adapter: CategoryRecyclerViewAdapter? = null
+    private lateinit var adapter: CategoryRecyclerViewAdapter
     private var listener: OnListFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,27 +53,18 @@ class FragmentCategory : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = CategoryRecyclerViewAdapter(ArrayList<Category>(), listener)
             }
         }
+        adapter = CategoryRecyclerViewAdapter(ArrayList<Category>(), listener)
         // https://stackoverflow.com/questions/44489235/update-recyclerview-with-android-livedata
-        adapter?.let { adapter ->
+//        adapter?.let { adapter ->
             var viewModel = ViewModelProviders.of(this).get(CategoryListViewModel::class.java)
             viewModel.getAllListCategory().nonNullObserve(this, {
                 adapter.updateData(it)
             })
-        }
+//        }
 
         return view
-    }
-
-    /**
-     * see https://qiita.com/yuichi_araki/items/f9b0778f927bccdf08ca
-     */
-    fun <T> LiveData<T>.nonNullObserve(owner: LifecycleOwner, observer: (t: T) -> Unit) {
-        this.observe(owner, android.arch.lifecycle.Observer {
-            it?.let(observer)
-        })
     }
 
     override fun onAttach(context: Context) {

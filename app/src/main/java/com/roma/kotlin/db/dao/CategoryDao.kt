@@ -12,14 +12,22 @@ import com.roma.kotlin.db.obj.Category
 @Dao
 interface CategoryDao {
 
-//    @Query("SELECT * FROM category ORDER BY seq ASC")
-//    fun getAll(): List<Category>
+    companion object{
+        const val COL_UID = "uid"
+        const val COL_NAME = "name"
+        const val COL_SEQ = "seq"
 
-    @get:Query("SELECT * FROM category ORDER BY seq ASC")
+        const val TBL_CATEGORY = "category"
+    }
+
+    @get:Query("SELECT * FROM $TBL_CATEGORY ORDER BY $COL_SEQ ASC")
     val all: List<Category>
 
-    @Query("SELECT * FROM category ORDER BY seq ASC")
+    @Query("SELECT * FROM $TBL_CATEGORY ORDER BY $COL_SEQ ASC")
     fun getAllCategories(): LiveData<List<Category>>
+
+    @Query("SELECT * FROM $TBL_CATEGORY WHERE $COL_NAME=:name")
+    fun getCategory(name: String):Category
 
     // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/index.html?index=..%2F..%2Findex#4
     @Insert(onConflict = OnConflictStrategy.REPLACE)

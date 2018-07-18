@@ -33,6 +33,8 @@ abstract class AppDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context) =
                 Room.databaseBuilder(context.applicationContext,
                         AppDatabase::class.java, "roma.db")
+                        .allowMainThreadQueries()
+                        .fallbackToDestructiveMigration()
                         .build()
 //        @Synchronized
 //        fun getInstance(context: Context): AppDatabase {

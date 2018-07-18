@@ -4,8 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
-import android.support.v4.app.NavUtils
-import android.support.v4.app.DialogFragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -16,21 +14,12 @@ import android.support.v4.widget.DrawerLayout
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import com.roma.kotlin.db.obj.Category
-import com.roma.kotlin.fragments.DialogAddCategory
-import com.roma.kotlin.fragments.FragmentHome
-import com.roma.kotlin.fragments.FragmentItem
-import com.roma.kotlin.fragments.FragmentChart
-import com.roma.kotlin.fragments.FragmentTool
-import com.roma.kotlin.fragments.FragmentCategory
-import com.roma.kotlin.fragments.FragmentCloud
-import com.roma.kotlin.fragments.FragmentAddCategory
+import com.roma.kotlin.fragments.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         FragmentHome.OnFragmentInteractionListener,
@@ -39,7 +28,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FragmentTool.OnFragmentInteractionListener,
         FragmentCategory.OnListFragmentInteractionListener,
         FragmentCloud.OnFragmentInteractionListener,
-        FragmentAddCategory.OnSaveCategoryInteractionListener {
+        OnCloseDialogInteractionListener {
 
 
     var fabAction = FAB_ACTION_ADD_ITEM
@@ -75,7 +64,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         // we don't need keep state after close
                         addCat.dismissAllowingStateLoss()
                         supportFragmentManager.popBackStack()
-                        showDrawer()
+                        enableDrawer()
                     }
                 }
             }
@@ -152,15 +141,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // TODO
     }
 
-    override fun onSaveCategoryInteraction(category: Category) {
+    override fun onCloseDialogInteraction() {
         // cannot get
 //        var editCategoryName = findViewById(R.id.editCategoryName) as EditText
 //        Toast.makeText(this, editCategoryName.text, Toast.LENGTH_SHORT).show()
         Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
-        showDrawer()
+        enableDrawer()
     }
 
-    fun showDrawer() {
+    fun enableDrawer() {
         hideKeyboard()
         drawerToggle.setToolbarNavigationClickListener(null)
         drawerToggle.setHomeAsUpIndicator(null)
@@ -183,16 +172,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (isEnabled) {
             drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED)
-//            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-//            supportActionBar!!.setDisplayShowHomeEnabled(false)
             drawerToggle.setDrawerIndicatorEnabled(true)
             drawerToggle.syncState()
         } else {
             drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             drawerToggle.setDrawerIndicatorEnabled(false)
-//            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-//            supportActionBar!!.setDisplayShowHomeEnabled(true)
             drawerToggle.syncState()
         }
     }
