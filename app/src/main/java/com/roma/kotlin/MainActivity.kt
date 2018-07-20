@@ -1,5 +1,6 @@
 package com.roma.kotlin
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -9,40 +10,65 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v4.widget.DrawerLayout
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import com.roma.kotlin.fragments.FragmentHome
-import com.roma.kotlin.fragments.FragmentItem
-import com.roma.kotlin.fragments.FragmentChart
-import com.roma.kotlin.fragments.FragmentTool
-import com.roma.kotlin.fragments.FragmentCloud
+import com.roma.kotlin.db.obj.Category
+import com.roma.kotlin.fragments.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         FragmentHome.OnFragmentInteractionListener,
         FragmentItem.OnListFragmentInteractionListener,
         FragmentChart.OnFragmentInteractionListener,
         FragmentTool.OnFragmentInteractionListener,
-        FragmentCloud.OnFragmentInteractionListener {
+        FragmentCategory.OnListFragmentInteractionListener,
+        FragmentCloud.OnFragmentInteractionListener,
+        OnCloseDialogInteractionListener {
+
+
+    var fabAction = FAB_ACTION_ADD_ITEM
+    lateinit var drawerToggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
-
-        val toggle = ActionBarDrawerToggle(
+        // see https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer
+        drawerToggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
-
+        drawer_layout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
 
+        fab.setOnClickListener { view ->
+            when (fabAction) {
+                FAB_ACTION_ADD_ITEM -> {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show()
+                }
+                FAB_ACTION_ADD_CATEGORY -> {
+                    setDrawerState(false)
+                    fab.hide()
+                    val addCat = FragmentAddCategory()
+                    replaceFragment(addCat, R.id.fragment_container)
+                    drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+                    // see comment https://stackoverflow.com/questions/37965231/return-to-default-onclicklistener-navigation-drawer-icon
+                    // set on click listener on toggle action instead of toobar
+                    drawerToggle.setToolbarNavigationClickListener {
+                        // we don't need keep state after close
+                        addCat.dismissAllowingStateLoss()
+                        supportFragmentManager.popBackStack()
+                        enableDrawer()
+                    }
+                }
+            }
+        }
         // TODO: memorize last fragment?
         addFragment(FragmentHome(), R.id.fragment_container)
         // focus on navigation list in the drawer on create
@@ -74,6 +100,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // set fab default action
+        fabAction = FAB_ACTION_ADD_ITEM
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
@@ -88,8 +116,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_tool -> {
                 replaceFragment(FragmentTool(), R.id.fragment_container)
             }
+            R.id.nav_category -> {
+                replaceFragment(FragmentCategory(), R.id.fragment_container)
+                fabAction = FAB_ACTION_ADD_CATEGORY
+            }
             R.id.nav_cloud -> {
-                replaceFragment(FragmentChart(), R.id.fragment_container)
+                replaceFragment(FragmentCloud(), R.id.fragment_container)
             }
         }
 
@@ -97,13 +129,57 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-
     override fun onFragmentInteraction() {
         // TODO Implement
     }
 
     override fun onListFragmentInteraction() {
         // TODO
+    }
+
+    override fun onListFragmentInteraction(category: Category?) {
+        // TODO
+    }
+
+    override fun onCloseDialogInteraction() {
+        // cannot get
+//        var editCategoryName = findViewById(R.id.editCategoryName) as EditText
+//        Toast.makeText(this, editCategoryName.text, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
+        enableDrawer()
+    }
+
+    fun enableDrawer() {
+        hideKeyboard()
+        drawerToggle.setToolbarNavigationClickListener(null)
+        drawerToggle.setHomeAsUpIndicator(null)
+        setDrawerState(true)
+        fab.show()
+    }
+
+    companion object {
+        const val FAB_ACTION_ADD_ITEM = 0
+        const val FAB_ACTION_ADD_CATEGORY = 1
+        const val FAB_ACTION_ADD_SUBCATEGORY = 2
+    }
+
+    /**
+     * see https://stackoverflow.com/questions/19439320/disabling-navigation-drawer-toggling-home-button-up-indicator-in-fragments
+     * see https://github.com/mikepenz/MaterialDrawer
+     * see https://github.com/mikepenz/MaterialDrawer/issues/76
+     */
+    fun setDrawerState(isEnabled: Boolean) {
+        if (isEnabled) {
+            drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED)
+            drawerToggle.setDrawerIndicatorEnabled(true)
+            drawerToggle.syncState()
+        } else {
+            drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            drawerToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            drawerToggle.setDrawerIndicatorEnabled(false)
+            drawerToggle.syncState()
+        }
     }
 
     // see https://medium.com/thoughts-overflow/how-to-add-a-fragment-in-kotlin-way-73203c5a450b
@@ -125,5 +201,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         menu.findItem(actionId)?.isChecked = true
     }
 
+    /**
+     * https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard?page=1&tab=votes#tab-top
+     */
+    fun hideKeyboard(activity: Activity) {
+        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun hideKeyboard() {
+        val imm = this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = this.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(this)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
     // end of example code
 }

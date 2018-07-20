@@ -11,5 +11,7 @@
     <string name="menu_view_list">List</string>
     <string name="menu_home">Home</string>
     <string name="menu_setting">Settings</string>
+    <string name="menu_category">Category</string>
     <string name="menu_cloud">Cloud</string>
+    <string name="menu_save">Save</string>
 </resources>
