@@ -1,40 +1,45 @@
 package com.roma.kotlin.model
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.MediatorLiveData
+import android.arch.lifecycle.Transformations
+import android.arch.lifecycle.ViewModel
 import android.os.AsyncTask
 
-import com.roma.kotlin.db.AppDatabase
+import com.roma.kotlin.db.dao.CategoryDao
 import com.roma.kotlin.db.obj.Category
 
 /**
- * see https://github.com/MarcOliva/Room-Db-with-LiveData-Kotlin
+ * @see https://github.com/MarcOliva/Room-Db-with-LiveData-Kotlin
+ *
+ * use ViewModel instead of androidviewmodel
+ * @see https://stackoverflow.com/questions/44148966/androidviewmodel-vs-viewmodel
+ * @see https://antonioleiva.com/architecture-components-kotlin/
+ * @see https://developer.android.com/topic/libraries/architecture/viewmodel
+ * @see https://github.com/googlesamples/android-sunflower
  */
-class CategoryListViewModel(application: Application) : AndroidViewModel(application) {
-    var listCategory: LiveData<List<Category>>
-    private val appDb: AppDatabase
+class CategoryListViewModel(private val categoryDao: CategoryDao) : ViewModel() {
+
+    private val categoryList = MediatorLiveData<List<Category>>()
 
     init {
-        appDb = AppDatabase.getInstance(this.getApplication())
-        listCategory = appDb.categoryDao().getAllCategories()
+//        categoryList = categoryDao.getAllCategories()
+        val liveCategoryList = categoryDao.getAllCategories()
+        categoryList.addSource(liveCategoryList, categoryList::setValue)
     }
 
-    fun getAllListCategory(): LiveData<List<Category>> {
-        return listCategory
-    }
+    fun getCategories() = categoryList
 
     fun addCategory(category: Category) {
-        addAsynTask(appDb).execute(category)
+        addAsynTask(categoryDao).execute(category)
     }
 
-    class addAsynTask(db: AppDatabase) : AsyncTask<Category, Void, Void>() {
-        private var appDb = db
+    class addAsynTask(categoryDao: CategoryDao) : AsyncTask<Category, Void, Void>() {
+        private var repo = categoryDao
         override fun doInBackground(vararg params: Category): Void? {
-            appDb.categoryDao().insert(params[0])
+            repo.insert(params[0])
             return null
         }
 
     }
-
 }

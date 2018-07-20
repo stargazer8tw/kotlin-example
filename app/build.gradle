@@ -34,6 +34,9 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.google.android.gms:play-services-plus:15.0.1'
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.19.1'
+    testImplementation 'android.arch.core:core-testing:1.1.0'
+
     // run room unit test in standard JVM requires these 3  test implementation
 //    testImplementation "org.robolectric:robolectric:3.8"
 //    testImplementation 'com.android.support.test:runner:1.0.2'
@@ -49,7 +52,7 @@ dependencies {
     // chanage to 'kapt' instead of annotationProcessor
     // see https://medium.com/jastzeonic/kotlin-room-%E4%BD%BF%E7%94%A8%E5%88%9D%E9%AB%94%E9%A9%97-f3af4f8ddc80
     // see http://kotlinlang.org/docs/reference/kapt.html
-    // kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
     kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
     androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
 

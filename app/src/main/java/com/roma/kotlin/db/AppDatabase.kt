@@ -10,7 +10,8 @@ import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.db.obj.SubCategory
 
 /**
- * see https://github.com/irontec/android-room-example
+ * @see https://github.com/irontec/android-room-example
+ * @see https://medium.com/google-developers/7-pro-tips-for-room-fbadea4bfbd1
  */
 @Database(entities = arrayOf(Category::class, SubCategory::class), version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {

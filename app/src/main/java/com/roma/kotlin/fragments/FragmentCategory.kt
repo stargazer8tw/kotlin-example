@@ -1,8 +1,6 @@
 package com.roma.kotlin.fragments
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
@@ -17,6 +15,7 @@ import com.roma.kotlin.R
 
 import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.model.CategoryListViewModel
+import com.roma.kotlin.utils.InjectorUtils
 import com.roma.kotlin.ext.nonNullObserve
 
 /**
@@ -27,7 +26,8 @@ import com.roma.kotlin.ext.nonNullObserve
 class FragmentCategory : Fragment() {
 
     private var columnCount = 1
-    private lateinit var adapter: CategoryRecyclerViewAdapter
+//    private lateinit var adapter: CategoryRecyclerViewAdapter
+    private lateinit var viewModel: CategoryListViewModel
     private var listener: OnListFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,23 +45,28 @@ class FragmentCategory : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_category_list, container, false)
+        val context = context ?: return view
+        val factory = InjectorUtils.provideCategoryListViewModelFactory(context)
+        viewModel = ViewModelProviders.of(this, factory).get(CategoryListViewModel::class.java)
 
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-            }
-        }
-        adapter = CategoryRecyclerViewAdapter(ArrayList<Category>(), listener)
+//        if (view is RecyclerView) {
+//            with(view) {
+//                layoutManager = when {
+//                    columnCount <= 1 -> LinearLayoutManager(context)
+//                    else -> GridLayoutManager(context, columnCount)
+//                }
+//            }
+//        }
+        val adapter = CategoryRecyclerViewAdapter()
+        view.findViewById<RecyclerView>(R.id.category_list).adapter = adapter
+        subscribeUi(adapter)
         // https://stackoverflow.com/questions/44489235/update-recyclerview-with-android-livedata
 //        adapter?.let { adapter ->
-            var viewModel = ViewModelProviders.of(this).get(CategoryListViewModel::class.java)
-            viewModel.getAllListCategory().nonNullObserve(this, {
-                adapter.updateData(it)
-            })
+//            var viewModel = ViewModelProviders.of(this).get(CategoryListViewModel::class.java)
+//            viewModel.getCategories().nonNullObserve(this, {
+//                adapter.updateData(it)
+//            })
 //        }
 
         return view
@@ -81,6 +86,14 @@ class FragmentCategory : Fragment() {
         listener = null
     }
 
+    private fun subscribeUi(adapter: CategoryRecyclerViewAdapter) {
+//        viewModel.getCategories().observe(viewLifecycleOwner, Observer { categories ->
+//            if (categories != null) adapter.submitList(categories)
+//        })
+        viewModel.getCategories().nonNullObserve(this, { categories ->
+            if (categories != null) adapter.submitList(categories)
+        })
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
