@@ -64,21 +64,23 @@ class FragmentAddCategory() : DialogFragment() {
             return
         }
 
-
-        var duplicated = false
         viewModel.getCategories().nonNullObserve(this, {
-            duplicated = it.any { category -> category.name.equals(txt) }
+            var duplicated = false
+            for (category in it) {
+                if (category.name.equals(txt)) {
+                    editCategoryName.error = "Category Name is duplicated"
+                    editCategoryName.requestFocus()
+                    duplicated = true
+                    break
+                }
+            }
+            if (!duplicated) {
+                viewModel.addCategory(Category(0, txt, 0))
+                Toast.makeText(activity, "saved", Toast.LENGTH_SHORT).show()
+                listener?.onCloseDialogInteraction()
+                dismiss()
+            }
         })
-        if (duplicated) {
-            editCategoryName.error = "Category Name is duplicated"
-            editCategoryName.requestFocus()
-            return
-        } else {
-            viewModel.addCategory(Category(0, txt, 0))
-            Toast.makeText(activity, "saved", Toast.LENGTH_SHORT).show()
-        }
-        listener?.onCloseDialogInteraction()
-        dismiss()
     }
 
     override fun onAttach(context: Context) {
