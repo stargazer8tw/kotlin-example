@@ -147,6 +147,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        Toast.makeText(this, editCategoryName.text, Toast.LENGTH_SHORT).show()
         Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
         enableDrawer()
+        when (fabAction) {
+            FAB_ACTION_ADD_CATEGORY -> {
+                replaceFragment(FragmentCategory(), R.id.fragment_container)
+            }
+        }
     }
 
     fun enableDrawer() {
