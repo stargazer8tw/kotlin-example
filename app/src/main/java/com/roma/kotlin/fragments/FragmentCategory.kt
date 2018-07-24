@@ -17,6 +17,10 @@ import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.model.CategoryListViewModel
 import com.roma.kotlin.utils.InjectorUtils
 import com.roma.kotlin.ext.nonNullObserve
+import android.support.v7.widget.helper.ItemTouchHelper
+import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
+
+
 
 /**
  * A fragment representing a list of Items.
@@ -25,17 +29,11 @@ import com.roma.kotlin.ext.nonNullObserve
  */
 class FragmentCategory : Fragment() {
 
-    private var columnCount = 1
-//    private lateinit var adapter: CategoryRecyclerViewAdapter
     private lateinit var viewModel: CategoryListViewModel
     private var listener: OnListFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
     }
 
 
@@ -59,6 +57,11 @@ class FragmentCategory : Fragment() {
 //            }
 //        }
         val adapter = CategoryRecyclerViewAdapter()
+
+        // swipe and drag implementation
+        val itemTouchHelper = ItemTouchHelper(SwipeAndDragHelper(adapter))
+        itemTouchHelper.attachToRecyclerView(view.findViewById<RecyclerView>(R.id.category_list))
+
         view.findViewById<RecyclerView>(R.id.category_list).adapter = adapter
         subscribeUi(adapter)
         // https://stackoverflow.com/questions/44489235/update-recyclerview-with-android-livedata
@@ -91,7 +94,7 @@ class FragmentCategory : Fragment() {
 //            if (categories != null) adapter.submitList(categories)
 //        })
         viewModel.getCategories().nonNullObserve(this, { categories ->
-            if (categories != null) adapter.submitList(categories)
+            if (categories != null) adapter.updateList(categories)
         })
     }
     /**
@@ -108,20 +111,5 @@ class FragmentCategory : Fragment() {
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onListFragmentInteraction(category: Category?)
-    }
-
-    companion object {
-
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-                FragmentCategory().apply {
-                    arguments = Bundle().apply {
-                        putInt(ARG_COLUMN_COUNT, columnCount)
-                    }
-                }
     }
 }

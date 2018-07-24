@@ -1,5 +1,6 @@
 package com.roma.kotlin.fragments
 
+import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 
@@ -12,18 +13,16 @@ import com.roma.kotlin.R
 
 import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.fragments.FragmentCategory.OnListFragmentInteractionListener
+import com.roma.kotlin.adapters.CategoryDiffCallback
 import kotlinx.android.synthetic.main.fragment_category.view.*
 import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
 import com.roma.kotlin.fragments.helper.SwipeAndDragHelper.ItemMoveSwipeListener
-import java.util.*
 
 /**
- * fallback to use RecyclerView.Adapter instead of ListAdapter
+ * @see https://github.com/googlesamples/android-sunflower/blob/master/app/src/main/java/com/google/samples/apps/sunflower/adapters/PlantAdapter.kt
  */
-class CategoryRecyclerViewAdapter : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>(),
+class CategoryListAdapter : ListAdapter<Category, CategoryListAdapter.ViewHolder>(CategoryDiffCallback()),
         SwipeAndDragHelper.ItemMoveSwipeListener {
-
-    private var mList : List<Category> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -32,7 +31,7 @@ class CategoryRecyclerViewAdapter : RecyclerView.Adapter<CategoryRecyclerViewAda
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val category = mList[position]
+        val category = getItem(position)
         holder.apply {
             bind(createOnClickListener(category.uid), category)
             itemView.tag = category
@@ -43,28 +42,6 @@ class CategoryRecyclerViewAdapter : RecyclerView.Adapter<CategoryRecyclerViewAda
         return View.OnClickListener {
 //            val direction = PlantListFragmentDirections.ActionPlantListFragmentToPlantDetailFragment(plantId)
 //            it.findNavController().navigate(direction)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return mList.size
-    }
-
-
-    fun updateList(newList : List<Category>) {
-        if (newList == null) {
-            val oldSize = mList.size
-            mList = emptyList()
-            notifyItemRangeChanged(0, oldSize)
-            return
-        }
-
-        // fast simple first insert
-        if (mList.isEmpty()) {
-            mList = newList
-            // notify last, after list is updated
-            notifyItemRangeChanged(0, newList.size)
-            return
         }
     }
 
