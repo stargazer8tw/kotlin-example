@@ -27,10 +27,11 @@ import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
  * Activities containing this fragment MUST implement the
  * [FragmentCategory.OnListFragmentInteractionListener] interface.
  */
-class FragmentCategory : Fragment() {
+class FragmentCategory : Fragment(), CategoryRecyclerViewAdapter.OnStartDragListener {
 
     private lateinit var viewModel: CategoryListViewModel
     private var listener: OnListFragmentInteractionListener? = null
+    private var itemTouchHelper: ItemTouchHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +57,11 @@ class FragmentCategory : Fragment() {
 //                }
 //            }
 //        }
-        val adapter = CategoryRecyclerViewAdapter()
+        val adapter = CategoryRecyclerViewAdapter(this)
 
         // swipe and drag implementation
-        val itemTouchHelper = ItemTouchHelper(SwipeAndDragHelper(adapter))
-        itemTouchHelper.attachToRecyclerView(view.findViewById<RecyclerView>(R.id.category_list))
+        itemTouchHelper = ItemTouchHelper(SwipeAndDragHelper(adapter))
+        itemTouchHelper?.let() {it.attachToRecyclerView(view.findViewById<RecyclerView>(R.id.category_list))}
 
         view.findViewById<RecyclerView>(R.id.category_list).adapter = adapter
         subscribeUi(adapter)
@@ -96,6 +97,10 @@ class FragmentCategory : Fragment() {
         viewModel.getCategories().nonNullObserve(this, { categories ->
             if (categories != null) adapter.updateList(categories)
         })
+    }
+
+    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
+        itemTouchHelper?.let() {it.startDrag(viewHolder)}
     }
     /**
      * This interface must be implemented by activities that contain this

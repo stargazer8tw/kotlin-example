@@ -52,6 +52,8 @@ class CategoryListAdapter : ListAdapter<Category, CategoryListAdapter.ViewHolder
         }
     }
 
+
+
     override fun onItemMoved(oldPosition: Int, newPosition: Int) {
         // TODO reorder logic
         notifyItemMoved(oldPosition, newPosition)
