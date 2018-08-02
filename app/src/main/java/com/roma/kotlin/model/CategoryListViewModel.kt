@@ -34,10 +34,23 @@ class CategoryListViewModel(private val categoryDao: CategoryDao) : ViewModel() 
         addAsynTask(categoryDao).execute(category)
     }
 
+    fun deleteCategory(category: Category) {
+        deleteAsynTask(categoryDao).execute(category)
+    }
+
     class addAsynTask(categoryDao: CategoryDao) : AsyncTask<Category, Void, Void>() {
         private var repo = categoryDao
         override fun doInBackground(vararg params: Category): Void? {
             repo.insert(params[0])
+            return null
+        }
+
+    }
+
+    class deleteAsynTask(categoryDao: CategoryDao) : AsyncTask<Category, Void, Void>() {
+        private var repo = categoryDao
+        override fun doInBackground(vararg params: Category): Void? {
+            repo.delete(params[0])
             return null
         }
 

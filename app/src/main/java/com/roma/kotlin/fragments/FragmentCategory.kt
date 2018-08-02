@@ -102,6 +102,12 @@ class FragmentCategory : Fragment(), CategoryRecyclerViewAdapter.OnStartDragList
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
         itemTouchHelper?.let() {it.startDrag(viewHolder)}
     }
+
+    override fun onDelete(category: Category) : Boolean {
+        viewModel.deleteCategory(category)
+        return true
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

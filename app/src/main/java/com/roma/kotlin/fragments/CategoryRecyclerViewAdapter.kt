@@ -81,6 +81,12 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
     interface OnStartDragListener {
 
         fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
+
+        /**
+         * @return true when delete record from repository is successful
+         */
+        fun onDelete(category: Category) : Boolean
+        
     }
 
     override fun onItemMoved(oldPosition: Int, newPosition: Int) {
@@ -102,7 +108,7 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
         val mod = mList.toMutableList() //mutableListOf(mList)
         val category = mod.removeAt(position)
         // TODO delete
-        if (onDelete(category)) {
+        if (listener.onDelete(category)) {
             mList = mod.toList()
             notifyItemRemoved(position)
         }
