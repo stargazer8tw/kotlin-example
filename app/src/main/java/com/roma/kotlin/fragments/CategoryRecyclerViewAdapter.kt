@@ -1,61 +1,48 @@
 package com.roma.kotlin.fragments
 
-import android.support.v7.recyclerview.extensions.ListAdapter
+import android.content.Context
+import android.util.Log
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.roma.kotlin.R
-
 import com.roma.kotlin.db.obj.Category
-import com.roma.kotlin.fragments.FragmentCategory.OnListFragmentInteractionListener
-import com.roma.kotlin.adapters.CategoryDiffCallback
+import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
 import kotlinx.android.synthetic.main.fragment_category.view.*
+import java.util.Collections
+import android.view.MotionEvent
 
 /**
- * @see https://github.com/googlesamples/android-sunflower/blob/master/app/src/main/java/com/google/samples/apps/sunflower/adapters/PlantAdapter.kt
+ * fallback to use RecyclerView.Adapter instead of ListAdapter
+ * @see https://android.devdon.com/archives/113
  */
-//class CategoryRecyclerViewAdapter(
-//        private var mValue: List<Category>,
-//        private val mListener: OnListFragmentInteractionListener?)
-//    : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>() {
+class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>(),
+        SwipeAndDragHelper.ItemMoveSwipeListener {
 
-class CategoryRecyclerViewAdapter : ListAdapter<Category, CategoryRecyclerViewAdapter.ViewHolder>(CategoryDiffCallback()) {
-
-//    private val categoryList: List<Category>? = null
-//    private val mOnClickListener: View.OnClickListener
-//
-//    init {
-//        mOnClickListener = View.OnClickListener { v ->
-//            val item = v.tag as Category
-//            // Notify the active callbacks interface (the activity, if the fragment is attached to
-//            // one) that an item has been selected.
-//            mListener?.onListFragmentInteraction(item)
-//        }
-//    }
+    private var mList : List<Category> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.fragment_category, parent, false)
         return ViewHolder(view)
-//        return ViewHolder(ListItemPlantBinding.inflate(
-//                LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        val item = mValue[position]
-//        holder.mIdView.text = item.uid.toString()
-//        holder.mContentView.text = item.name
-//
-//        with(holder.mView) {
-//            tag = item
-//            setOnClickListener(mOnClickListener)
-//        }
-        val category = getItem(position)
+        val category = mList[position]
         holder.apply {
             bind(createOnClickListener(category.uid), category)
             itemView.tag = category
+            /** @see https://www.techotopia.com/index.php/Kotlin_-_Android_Touch_and_Multi-touch_Event_Handling */
+            itemView.image_reorder_category.setOnTouchListener { v: View, m: MotionEvent ->
+                val action = m.actionMasked
+                when (action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        listener.onStartDrag(holder)
+                    }
+                }
+                true
+            }
         }
     }
 
@@ -66,27 +53,74 @@ class CategoryRecyclerViewAdapter : ListAdapter<Category, CategoryRecyclerViewAd
         }
     }
 
-//    override fun getItemCount(): Int = mValue.size
+    override fun getItemCount(): Int {
+        return mList.size
+    }
 
-//    fun updateData(categoryList: List<Category>) {
-//        mValue = categoryList
-//        notifyDataSetChanged()
-//    }
+
+    fun updateList(newList : List<Category>) {
+        // fast simple first insert
+        if (mList.isEmpty()) {
+            mList = newList
+            // notify last, after list is updated
+            notifyItemRangeChanged(0, newList.size)
+            return
+        }
+    }
 
     class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-//        val mIdView: TextView = mView.item_number
-//        val mContentView: TextView = mView.content
-//
-//        override fun toString(): String {
-//            return super.toString() + " '" + mContentView.text + "'"
-//        }
         fun bind(listener: View.OnClickListener, item: Category) {
-            mView.item_number.text = "$item.uid"
-            mView.content.text = item.name
+            mView.category_name.text = item.name
             mView.setOnClickListener { listener }
-//            clickListener = listener
-//            plant = item
-//            executePendingBindings()
+        }
+    }
+
+    /**
+     * @see https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-6a6f0c422efd
+     */
+    interface OnStartDragListener {
+
+        fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
+
+        /**
+         * @return true when delete record from repository is successful
+         */
+        fun onDelete(category: Category) : Boolean
+
+        /**
+         * @return true when reorder records in the repository is successful
+         */
+        fun onReorder(categories : List<Category>) : Boolean
+    }
+
+    override fun onItemMoved(oldPosition: Int, newPosition: Int) {
+        Log.d("move", "$oldPosition -> $newPosition")
+        if (oldPosition < newPosition) {
+            for (i in oldPosition until newPosition) {
+                Collections.swap(mList, i, i + 1)
+            }
+        } else {
+            for (i in oldPosition downTo newPosition + 1) {
+                Collections.swap(mList, i, i - 1)
+            }
+        }
+        // reorder
+        mList.forEachIndexed { index, category ->
+            Log.d("move", "$category.seq -> $index.toLong()")
+            category.seq = index.toLong()
+        }
+        if (listener.onReorder(mList)) {
+            notifyItemMoved(oldPosition, newPosition)
+        }
+    }
+
+    override fun onItemSwiped(position: Int) {
+        val mod = mList.toMutableList()
+        val category = mod.removeAt(position)
+        // delete record in repository
+        if (listener.onDelete(category)) {
+            mList = mod.toList()
+            notifyItemRemoved(position)
         }
     }
 }

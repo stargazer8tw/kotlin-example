@@ -75,7 +75,11 @@ class FragmentAddCategory() : DialogFragment() {
                 }
             }
             if (!duplicated) {
-                viewModel.addCategory(Category(0, txt, 0))
+                val category = Category(0, txt, 0)
+                viewModel.getCategories().getValue()?.let() {
+                    category.seq = it.size.toLong()
+                }
+                viewModel.addCategory(category)
                 Toast.makeText(activity, "saved", Toast.LENGTH_SHORT).show()
                 listener?.onCloseDialogInteraction()
                 dismiss()

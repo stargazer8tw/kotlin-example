@@ -17,25 +17,24 @@ import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.model.CategoryListViewModel
 import com.roma.kotlin.utils.InjectorUtils
 import com.roma.kotlin.ext.nonNullObserve
+import android.support.v7.widget.helper.ItemTouchHelper
+import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
+
+
 
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
  * [FragmentCategory.OnListFragmentInteractionListener] interface.
  */
-class FragmentCategory : Fragment() {
+class FragmentCategory : Fragment(), CategoryRecyclerViewAdapter.OnStartDragListener {
 
-    private var columnCount = 1
-//    private lateinit var adapter: CategoryRecyclerViewAdapter
     private lateinit var viewModel: CategoryListViewModel
     private var listener: OnListFragmentInteractionListener? = null
+    private var itemTouchHelper: ItemTouchHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
     }
 
 
@@ -58,7 +57,12 @@ class FragmentCategory : Fragment() {
 //                }
 //            }
 //        }
-        val adapter = CategoryRecyclerViewAdapter()
+        val adapter = CategoryRecyclerViewAdapter(this)
+
+        // swipe and drag implementation
+        itemTouchHelper = ItemTouchHelper(SwipeAndDragHelper(adapter))
+        itemTouchHelper?.let() {it.attachToRecyclerView(view.findViewById<RecyclerView>(R.id.category_list))}
+
         view.findViewById<RecyclerView>(R.id.category_list).adapter = adapter
         subscribeUi(adapter)
         // https://stackoverflow.com/questions/44489235/update-recyclerview-with-android-livedata
@@ -91,9 +95,26 @@ class FragmentCategory : Fragment() {
 //            if (categories != null) adapter.submitList(categories)
 //        })
         viewModel.getCategories().nonNullObserve(this, { categories ->
-            if (categories != null) adapter.submitList(categories)
+            if (categories != null) adapter.updateList(categories)
         })
     }
+
+    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
+        itemTouchHelper?.let() {it.startDrag(viewHolder)}
+    }
+
+    override fun onDelete(category: Category) : Boolean {
+        viewModel.deleteCategory(category)
+        return true
+    }
+
+    override fun onReorder(categories: List<Category>) : Boolean {
+        categories.forEach {
+            viewModel.addCategory(it)
+        }
+        return true
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -108,20 +129,5 @@ class FragmentCategory : Fragment() {
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onListFragmentInteraction(category: Category?)
-    }
-
-    companion object {
-
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
-
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-                FragmentCategory().apply {
-                    arguments = Bundle().apply {
-                        putInt(ARG_COLUMN_COUNT, columnCount)
-                    }
-                }
     }
 }
