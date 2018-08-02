@@ -108,6 +108,13 @@ class FragmentCategory : Fragment(), CategoryRecyclerViewAdapter.OnStartDragList
         return true
     }
 
+    override fun onReorder(categories: List<Category>) : Boolean {
+        categories.forEach {
+            viewModel.addCategory(it)
+        }
+        return true
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

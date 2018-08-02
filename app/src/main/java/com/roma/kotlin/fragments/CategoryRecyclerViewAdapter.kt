@@ -86,11 +86,15 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
          * @return true when delete record from repository is successful
          */
         fun onDelete(category: Category) : Boolean
-        
+
+        /**
+         * @return true when reorder records in the repository is successful
+         */
+        fun onReorder(categories : List<Category>) : Boolean
     }
 
     override fun onItemMoved(oldPosition: Int, newPosition: Int) {
-        Log.i("move", "$oldPosition -> $newPosition")
+        Log.d("move", "$oldPosition -> $newPosition")
         if (oldPosition < newPosition) {
             for (i in oldPosition until newPosition) {
                 Collections.swap(mList, i, i + 1)
@@ -100,14 +104,20 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
                 Collections.swap(mList, i, i - 1)
             }
         }
-        // TODO reorder
-        notifyItemMoved(oldPosition, newPosition)
+        // reorder
+        mList.forEachIndexed { index, category ->
+            Log.d("move", "$category.seq -> $index.toLong()")
+            category.seq = index.toLong()
+        }
+        if (listener.onReorder(mList)) {
+            notifyItemMoved(oldPosition, newPosition)
+        }
     }
 
     override fun onItemSwiped(position: Int) {
-        val mod = mList.toMutableList() //mutableListOf(mList)
+        val mod = mList.toMutableList()
         val category = mod.removeAt(position)
-        // TODO delete
+        // delete record in repository
         if (listener.onDelete(category)) {
             mList = mod.toList()
             notifyItemRemoved(position)
