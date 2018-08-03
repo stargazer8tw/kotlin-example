@@ -17,7 +17,7 @@ import android.view.MotionEvent
  * fallback to use RecyclerView.Adapter instead of ListAdapter
  * @see https://android.devdon.com/archives/113
  */
-class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>(),
+class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>(),
         SwipeAndDragHelper.ItemMoveSwipeListener {
 
     private var mList : List<Category> = emptyList()
@@ -75,24 +75,6 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
         }
     }
 
-    /**
-     * @see https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-6a6f0c422efd
-     */
-    interface OnStartDragListener {
-
-        fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
-
-        /**
-         * @return true when delete record from repository is successful
-         */
-        fun onDelete(category: Category) : Boolean
-
-        /**
-         * @return true when reorder records in the repository is successful
-         */
-        fun onReorder(categories : List<Category>) : Boolean
-    }
-
     override fun onItemMoved(oldPosition: Int, newPosition: Int) {
         Log.d("move", "$oldPosition -> $newPosition")
         if (oldPosition < newPosition) {
@@ -109,7 +91,7 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
             Log.d("move", "$category.seq -> $index.toLong()")
             category.seq = index.toLong()
         }
-        if (listener.onReorder(mList)) {
+        if (listener.onDragComplete(mList)) {
             notifyItemMoved(oldPosition, newPosition)
         }
     }

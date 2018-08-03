@@ -27,7 +27,7 @@ import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
  * Activities containing this fragment MUST implement the
  * [FragmentCategory.OnListFragmentInteractionListener] interface.
  */
-class FragmentCategory : Fragment(), CategoryRecyclerViewAdapter.OnStartDragListener {
+class FragmentCategory : Fragment(), ListActionListener<Category> {
 
     private lateinit var viewModel: CategoryListViewModel
     private var listener: OnListFragmentInteractionListener? = null
@@ -108,7 +108,7 @@ class FragmentCategory : Fragment(), CategoryRecyclerViewAdapter.OnStartDragList
         return true
     }
 
-    override fun onReorder(categories: List<Category>) : Boolean {
+    override fun onDragComplete(categories: List<Category>) : Boolean {
         categories.forEach {
             viewModel.addCategory(it)
         }
