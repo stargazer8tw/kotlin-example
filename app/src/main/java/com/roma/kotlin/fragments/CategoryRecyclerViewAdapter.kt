@@ -31,7 +31,7 @@ class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val category = mList[position]
         holder.apply {
-            bind(createOnClickListener(category.uid), category)
+            bind(listener, category)
             itemView.tag = category
             /** @see https://www.techotopia.com/index.php/Kotlin_-_Android_Touch_and_Multi-touch_Event_Handling */
             itemView.image_reorder_category.setOnTouchListener { v: View, m: MotionEvent ->
@@ -43,13 +43,6 @@ class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) :
                 }
                 true
             }
-        }
-    }
-
-    private fun createOnClickListener(uid: Long): View.OnClickListener {
-        return View.OnClickListener {
-//            val direction = PlantListFragmentDirections.ActionPlantListFragmentToPlantDetailFragment(plantId)
-//            it.findNavController().navigate(direction)
         }
     }
 
@@ -69,9 +62,10 @@ class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) :
     }
 
     class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        fun bind(listener: View.OnClickListener, item: Category) {
+        fun bind(mListener: ListActionListener<Category>, item: Category) {
             mView.category_name.text = item.name
-            mView.setOnClickListener { listener }
+            mView.setOnClickListener { mListener.onItemClick(item) }
+            Log.d("add on click listener", "$mView , $item.seq -> $item.name")
         }
     }
 

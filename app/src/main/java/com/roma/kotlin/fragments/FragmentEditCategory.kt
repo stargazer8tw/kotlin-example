@@ -20,7 +20,7 @@ import com.roma.kotlin.model.CategoryListViewModelFactory
 import com.roma.kotlin.utils.InjectorUtils
 import com.roma.kotlin.ext.nonNullObserve
 
-class FragmentAddCategory() : DialogFragment() {
+class FragmentEditCategory(val category: Category) : DialogFragment() {
 
     private var listener: OnDialogInteractionListener? = null
     private lateinit var viewModel: CategoryListViewModel
@@ -66,8 +66,11 @@ class FragmentAddCategory() : DialogFragment() {
 
         viewModel.getCategories().nonNullObserve(this, {
             var duplicated = false
-            for (category in it) {
+            for (item in it) {
                 if (category.name.equals(txt)) {
+                    // name is not change
+                    continue
+                } else if (item.name.equals(txt)) {
                     editCategoryName.error = "Category Name is duplicated"
                     editCategoryName.requestFocus()
                     duplicated = true
@@ -75,10 +78,7 @@ class FragmentAddCategory() : DialogFragment() {
                 }
             }
             if (!duplicated) {
-                val category = Category(0, txt, 0)
-                viewModel.getCategories().getValue()?.let() {
-                    category.seq = it.size.toLong()
-                }
+                category.name = txt
                 viewModel.addCategory(category)
                 Toast.makeText(activity, "saved", Toast.LENGTH_SHORT).show()
                 listener?.onCloseDialogInteraction()
@@ -92,7 +92,7 @@ class FragmentAddCategory() : DialogFragment() {
         if (context is OnDialogInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnCloseDialogInteractionListener")
+            throw RuntimeException(context.toString() + " must implement OnDialogInteractionListener")
         }
     }
 
@@ -105,6 +105,6 @@ class FragmentAddCategory() : DialogFragment() {
     }
 
     companion object {
-        const val TAG = "AddCategoryDialog"
+        const val TAG = "EditCategoryDialog"
     }
 }

@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v4.widget.DrawerLayout
+import android.support.v4.app.DialogFragment
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,9 +27,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FragmentItem.OnListFragmentInteractionListener,
         FragmentChart.OnFragmentInteractionListener,
         FragmentTool.OnFragmentInteractionListener,
-        FragmentCategory.OnListFragmentInteractionListener,
         FragmentCloud.OnFragmentInteractionListener,
-        OnCloseDialogInteractionListener {
+        OnDialogInteractionListener {
 
 
     var fabAction = FAB_ACTION_ADD_ITEM
@@ -53,19 +53,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             .setAction("Action", null).show()
                 }
                 FAB_ACTION_ADD_CATEGORY -> {
-                    setDrawerState(false)
-                    fab.hide()
-                    val addCat = FragmentAddCategory()
-                    replaceFragment(addCat, R.id.fragment_container)
-                    drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
-                    // see comment https://stackoverflow.com/questions/37965231/return-to-default-onclicklistener-navigation-drawer-icon
-                    // set on click listener on toggle action instead of toobar
-                    drawerToggle.setToolbarNavigationClickListener {
-                        // we don't need keep state after close
-                        addCat.dismissAllowingStateLoss()
-                        supportFragmentManager.popBackStack()
-                        enableDrawer()
-                    }
+                    onFullscreenDialog(FragmentAddCategory())
                 }
             }
         }
@@ -73,6 +61,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         addFragment(FragmentHome(), R.id.fragment_container)
         // focus on navigation list in the drawer on create
         nav_view.checkItem(R.id.nav_home)
+    }
+
+    fun onFullscreenDialog(dialog : DialogFragment) {
+        setDrawerState(false)
+        fab.hide()
+        replaceFragment(dialog, R.id.fragment_container)
+        drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+        // see comment https://stackoverflow.com/questions/37965231/return-to-default-onclicklistener-navigation-drawer-icon
+        // set on click listener on toggle action instead of toobar
+        drawerToggle.setToolbarNavigationClickListener {
+            // we don't need keep state after close
+            dialog.dismissAllowingStateLoss()
+            supportFragmentManager.popBackStack()
+            enableDrawer()
+        }
     }
 
     override fun onBackPressed() {
@@ -137,10 +140,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // TODO
     }
 
-    override fun onListFragmentInteraction(category: Category?) {
-        // TODO
-    }
-
     override fun onCloseDialogInteraction() {
         // cannot get
 //        var editCategoryName = findViewById(R.id.editCategoryName) as EditText
@@ -152,6 +151,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 replaceFragment(FragmentCategory(), R.id.fragment_container)
             }
         }
+    }
+
+    override fun onOpenDialogInteraction(dialog : DialogFragment) {
+        Toast.makeText(this, "open dialog", Toast.LENGTH_SHORT).show()
+        onFullscreenDialog(dialog)
     }
 
     fun enableDrawer() {

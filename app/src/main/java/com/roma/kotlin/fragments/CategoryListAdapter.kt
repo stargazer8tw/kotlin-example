@@ -12,7 +12,6 @@ import android.widget.TextView
 import com.roma.kotlin.R
 
 import com.roma.kotlin.db.obj.Category
-import com.roma.kotlin.fragments.FragmentCategory.OnListFragmentInteractionListener
 import com.roma.kotlin.adapters.CategoryDiffCallback
 import kotlinx.android.synthetic.main.fragment_category.view.*
 import com.roma.kotlin.fragments.helper.SwipeAndDragHelper

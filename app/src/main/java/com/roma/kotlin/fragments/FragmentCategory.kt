@@ -30,7 +30,7 @@ import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
 class FragmentCategory : Fragment(), ListActionListener<Category> {
 
     private lateinit var viewModel: CategoryListViewModel
-    private var listener: OnListFragmentInteractionListener? = null
+    private var listener: OnDialogInteractionListener? = null
     private var itemTouchHelper: ItemTouchHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,16 +47,6 @@ class FragmentCategory : Fragment(), ListActionListener<Category> {
         val context = context ?: return view
         val factory = InjectorUtils.provideCategoryListViewModelFactory(context)
         viewModel = ViewModelProviders.of(this, factory).get(CategoryListViewModel::class.java)
-
-        // Set the adapter
-//        if (view is RecyclerView) {
-//            with(view) {
-//                layoutManager = when {
-//                    columnCount <= 1 -> LinearLayoutManager(context)
-//                    else -> GridLayoutManager(context, columnCount)
-//                }
-//            }
-//        }
         val adapter = CategoryRecyclerViewAdapter(this)
 
         // swipe and drag implementation
@@ -65,23 +55,15 @@ class FragmentCategory : Fragment(), ListActionListener<Category> {
 
         view.findViewById<RecyclerView>(R.id.category_list).adapter = adapter
         subscribeUi(adapter)
-        // https://stackoverflow.com/questions/44489235/update-recyclerview-with-android-livedata
-//        adapter?.let { adapter ->
-//            var viewModel = ViewModelProviders.of(this).get(CategoryListViewModel::class.java)
-//            viewModel.getCategories().nonNullObserve(this, {
-//                adapter.updateData(it)
-//            })
-//        }
-
         return view
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnListFragmentInteractionListener) {
+        if (context is OnDialogInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
+            throw RuntimeException(context.toString() + " must implement OnDialogInteractionListener")
         }
     }
 
@@ -91,9 +73,6 @@ class FragmentCategory : Fragment(), ListActionListener<Category> {
     }
 
     private fun subscribeUi(adapter: CategoryRecyclerViewAdapter) {
-//        viewModel.getCategories().observe(viewLifecycleOwner, Observer { categories ->
-//            if (categories != null) adapter.submitList(categories)
-//        })
         viewModel.getCategories().nonNullObserve(this, { categories ->
             if (categories != null) adapter.updateList(categories)
         })
@@ -115,19 +94,9 @@ class FragmentCategory : Fragment(), ListActionListener<Category> {
         return true
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson
-     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onListFragmentInteraction(category: Category?)
+    override fun onItemClick(item : Category) : Boolean {
+        // call main activity
+        listener?.let() { it.onOpenDialogInteraction(FragmentEditCategory(item)) }
+        return true
     }
 }

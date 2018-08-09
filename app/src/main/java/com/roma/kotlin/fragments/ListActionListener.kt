@@ -20,4 +20,6 @@ interface ListActionListener<T> {
      * @return true when reorder records in the repository is successful
      */
     fun onDragComplete(items : List<T>) : Boolean
+
+    fun onItemClick(items : T) : Boolean
 }
