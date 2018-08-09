@@ -17,7 +17,7 @@ import android.view.MotionEvent
  * fallback to use RecyclerView.Adapter instead of ListAdapter
  * @see https://android.devdon.com/archives/113
  */
-class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>(),
+class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>(),
         SwipeAndDragHelper.ItemMoveSwipeListener {
 
     private var mList : List<Category> = emptyList()
@@ -31,7 +31,7 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val category = mList[position]
         holder.apply {
-            bind(createOnClickListener(category.uid), category)
+            bind(listener, category)
             itemView.tag = category
             /** @see https://www.techotopia.com/index.php/Kotlin_-_Android_Touch_and_Multi-touch_Event_Handling */
             itemView.image_reorder_category.setOnTouchListener { v: View, m: MotionEvent ->
@@ -43,13 +43,6 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
                 }
                 true
             }
-        }
-    }
-
-    private fun createOnClickListener(uid: Long): View.OnClickListener {
-        return View.OnClickListener {
-//            val direction = PlantListFragmentDirections.ActionPlantListFragmentToPlantDetailFragment(plantId)
-//            it.findNavController().navigate(direction)
         }
     }
 
@@ -69,28 +62,11 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
     }
 
     class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        fun bind(listener: View.OnClickListener, item: Category) {
+        fun bind(mListener: ListActionListener<Category>, item: Category) {
             mView.category_name.text = item.name
-            mView.setOnClickListener { listener }
+            mView.setOnClickListener { mListener.onItemClick(item) }
+            Log.d("add on click listener", "$mView , $item.seq -> $item.name")
         }
-    }
-
-    /**
-     * @see https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-6a6f0c422efd
-     */
-    interface OnStartDragListener {
-
-        fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
-
-        /**
-         * @return true when delete record from repository is successful
-         */
-        fun onDelete(category: Category) : Boolean
-
-        /**
-         * @return true when reorder records in the repository is successful
-         */
-        fun onReorder(categories : List<Category>) : Boolean
     }
 
     override fun onItemMoved(oldPosition: Int, newPosition: Int) {
@@ -109,7 +85,7 @@ class CategoryRecyclerViewAdapter(val listener : OnStartDragListener) : Recycler
             Log.d("move", "$category.seq -> $index.toLong()")
             category.seq = index.toLong()
         }
-        if (listener.onReorder(mList)) {
+        if (listener.onDragComplete(mList)) {
             notifyItemMoved(oldPosition, newPosition)
         }
     }
