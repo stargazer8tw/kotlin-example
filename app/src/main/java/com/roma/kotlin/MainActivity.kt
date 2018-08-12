@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // we don't need keep state after close
             dialog.dismissAllowingStateLoss()
             supportFragmentManager.popBackStack()
-            enableDrawer()
+            onCloseDialogInteraction()
         }
     }
 
@@ -141,10 +141,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCloseDialogInteraction() {
-        // cannot get
-//        var editCategoryName = findViewById(R.id.editCategoryName) as EditText
-//        Toast.makeText(this, editCategoryName.text, Toast.LENGTH_SHORT).show()
-        Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
         enableDrawer()
         when (fabAction) {
             FAB_ACTION_ADD_CATEGORY, FAB_ACTION_EDIT_CATEGORY -> {
