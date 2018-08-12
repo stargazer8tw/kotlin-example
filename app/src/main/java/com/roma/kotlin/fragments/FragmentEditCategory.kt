@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MenuInflater
+import android.widget.TextView
 import android.widget.Toast
 // use kotlin extension
 import kotlinx.android.synthetic.main.fragment_add_category.editCategoryName
@@ -36,6 +37,7 @@ class FragmentEditCategory(val category: Category) : DialogFragment() {
         val context = context ?: return view
         val factory = InjectorUtils.provideCategoryListViewModelFactory(context)
         viewModel = ViewModelProviders.of(this, factory).get(CategoryListViewModel::class.java)
+        view.findViewById<TextView>(R.id.editCategoryName).setText(category.name)
         return view
     }
 
