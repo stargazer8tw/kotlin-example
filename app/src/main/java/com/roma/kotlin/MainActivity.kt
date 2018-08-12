@@ -147,13 +147,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
         enableDrawer()
         when (fabAction) {
-            FAB_ACTION_ADD_CATEGORY -> {
+            FAB_ACTION_ADD_CATEGORY, FAB_ACTION_EDIT_CATEGORY -> {
                 replaceFragment(FragmentCategory(), R.id.fragment_container)
+                fabAction = FAB_ACTION_ADD_CATEGORY
             }
         }
     }
 
-    override fun onOpenDialogInteraction(dialog : DialogFragment) {
+    override fun onOpenDialogInteraction(dialog : DialogFragment, action: Int) {
+        fabAction = action
         Toast.makeText(this, "open dialog", Toast.LENGTH_SHORT).show()
         onFullscreenDialog(dialog)
     }
@@ -169,7 +171,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     companion object {
         const val FAB_ACTION_ADD_ITEM = 0
         const val FAB_ACTION_ADD_CATEGORY = 1
-        const val FAB_ACTION_ADD_SUBCATEGORY = 2
+        const val FAB_ACTION_EDIT_CATEGORY = 2
+        const val FAB_ACTION_ADD_SUBCATEGORY = 3
     }
 
     /**

@@ -19,7 +19,7 @@ import com.roma.kotlin.utils.InjectorUtils
 import com.roma.kotlin.ext.nonNullObserve
 import android.support.v7.widget.helper.ItemTouchHelper
 import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
-
+import com.roma.kotlin.MainActivity
 
 
 /**
@@ -96,7 +96,7 @@ class FragmentCategory : Fragment(), ListActionListener<Category> {
 
     override fun onItemClick(item : Category) : Boolean {
         // call main activity
-        listener?.let() { it.onOpenDialogInteraction(FragmentEditCategory(item)) }
+        listener?.let() { it.onOpenDialogInteraction(FragmentEditCategory(item), MainActivity.FAB_ACTION_EDIT_CATEGORY) }
         return true
     }
 }
