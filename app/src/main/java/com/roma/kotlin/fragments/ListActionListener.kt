@@ -21,5 +21,5 @@ interface ListActionListener<T> {
      */
     fun onDragComplete(items : List<T>) : Boolean
 
-    fun onItemClick(items : T) : Boolean
+    fun onItemClick(action : Int, items : T) : Boolean
 }

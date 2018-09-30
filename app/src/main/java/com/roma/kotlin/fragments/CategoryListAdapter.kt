@@ -37,7 +37,7 @@ class CategoryListAdapter : ListAdapter<Category, CategoryListAdapter.ViewHolder
         }
     }
 
-    private fun createOnClickListener(uid: Long): View.OnClickListener {
+    private fun createOnClickListener(uid: String): View.OnClickListener {
         return View.OnClickListener {
 //            val direction = PlantListFragmentDirections.ActionPlantListFragmentToPlantDetailFragment(plantId)
 //            it.findNavController().navigate(direction)

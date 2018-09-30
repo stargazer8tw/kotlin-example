@@ -10,22 +10,25 @@ import android.view.ViewGroup
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MenuInflater
+import android.widget.TextView
 import android.widget.Toast
 // use kotlin extension
 import kotlinx.android.synthetic.main.fragment_add_category.editCategoryName
 import com.roma.kotlin.R
-import com.roma.kotlin.db.obj.Category
 import com.roma.kotlin.model.CategoryListViewModel
-import com.roma.kotlin.model.CategoryListViewModelFactory
+import com.roma.kotlin.db.obj.Category
+import com.roma.kotlin.db.obj.SubCategory
 import com.roma.kotlin.utils.InjectorUtils
 import com.roma.kotlin.ext.nonNullObserve
 import java.util.UUID
 
-class FragmentAddCategory() : DialogFragment() {
+class FragmentEditSubCategory(val category : Category, val subcategory: SubCategory) : DialogFragment() {
 
     private var listener: OnDialogInteractionListener? = null
     private lateinit var viewModel: CategoryListViewModel
 
+    constructor (category : Category) : this(category, SubCategory(UUID.randomUUID().toString(), category.uid, "", Long.MAX_VALUE)) {
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -37,6 +40,7 @@ class FragmentAddCategory() : DialogFragment() {
         val context = context ?: return view
         val factory = InjectorUtils.provideCategoryListViewModelFactory(context)
         viewModel = ViewModelProviders.of(this, factory).get(CategoryListViewModel::class.java)
+        view.findViewById<TextView>(R.id.editCategoryName).setText(subcategory.name)
         return view
     }
 
@@ -65,10 +69,13 @@ class FragmentAddCategory() : DialogFragment() {
             return
         }
 
-        viewModel.getCategories().nonNullObserve(this, {
+        viewModel.getSubCategories(category).nonNullObserve(this, {
             var duplicated = false
-            for (category in it) {
-                if (category.name.equals(txt)) {
+            for (item in it) {
+                if (subcategory.name.equals(txt)) {
+                    // name is not change
+                    continue
+                } else if (item.name.equals(txt)) {
                     editCategoryName.error = "Category Name is duplicated"
                     editCategoryName.requestFocus()
                     duplicated = true
@@ -76,11 +83,8 @@ class FragmentAddCategory() : DialogFragment() {
                 }
             }
             if (!duplicated) {
-                val category = Category(UUID.randomUUID().toString(), txt, 0)
-                viewModel.getCategories().getValue()?.let() {
-                    category.seq = it.size.toLong()
-                }
-                viewModel.addCategory(category)
+                subcategory.name = txt
+                viewModel.addSubCategory(subcategory)
                 Toast.makeText(activity, "saved", Toast.LENGTH_SHORT).show()
                 listener?.onCloseDialogInteraction()
                 dismiss()
@@ -93,7 +97,7 @@ class FragmentAddCategory() : DialogFragment() {
         if (context is OnDialogInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnCloseDialogInteractionListener")
+            throw RuntimeException(context.toString() + " must implement OnDialogInteractionListener")
         }
     }
 
@@ -106,6 +110,6 @@ class FragmentAddCategory() : DialogFragment() {
     }
 
     companion object {
-        const val TAG = "AddCategoryDialog"
+        const val TAG = "EditCategoryDialog"
     }
 }

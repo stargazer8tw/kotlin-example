@@ -65,16 +65,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun onFullscreenDialog(dialog : DialogFragment) {
         setDrawerState(false)
-        fab.hide()
         replaceFragment(dialog, R.id.fragment_container)
-        drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+        when (fabAction) {
+            FAB_ACTION_ADD_CATEGORY, FAB_ACTION_EDIT_CATEGORY, FAB_ACTION_EDIT_SUBCATEGORY -> {
+                drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+                fab.hide()
+            }
+            FAB_ACTION_ADD_SUBCATEGORY -> {
+                drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+                fab.hide()
+            }
+        }
         // see comment https://stackoverflow.com/questions/37965231/return-to-default-onclicklistener-navigation-drawer-icon
         // set on click listener on toggle action instead of toobar
         drawerToggle.setToolbarNavigationClickListener {
             // we don't need keep state after close
             dialog.dismissAllowingStateLoss()
             supportFragmentManager.popBackStack()
-            enableDrawer()
+            onCloseDialogInteraction()
         }
     }
 
@@ -141,19 +149,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCloseDialogInteraction() {
-        // cannot get
-//        var editCategoryName = findViewById(R.id.editCategoryName) as EditText
-//        Toast.makeText(this, editCategoryName.text, Toast.LENGTH_SHORT).show()
-        Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
         enableDrawer()
         when (fabAction) {
-            FAB_ACTION_ADD_CATEGORY -> {
+            FAB_ACTION_ADD_CATEGORY, FAB_ACTION_EDIT_CATEGORY, FAB_ACTION_ADD_SUBCATEGORY, FAB_ACTION_EDIT_SUBCATEGORY -> {
                 replaceFragment(FragmentCategory(), R.id.fragment_container)
+                fabAction = FAB_ACTION_ADD_CATEGORY
             }
         }
     }
 
-    override fun onOpenDialogInteraction(dialog : DialogFragment) {
+    override fun onOpenDialogInteraction(dialog : DialogFragment, action: Int) {
+        fabAction = action
         Toast.makeText(this, "open dialog", Toast.LENGTH_SHORT).show()
         onFullscreenDialog(dialog)
     }
@@ -169,7 +176,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     companion object {
         const val FAB_ACTION_ADD_ITEM = 0
         const val FAB_ACTION_ADD_CATEGORY = 1
-        const val FAB_ACTION_ADD_SUBCATEGORY = 2
+        const val FAB_ACTION_EDIT_CATEGORY = 2
+        const val FAB_ACTION_ADD_SUBCATEGORY = 3
+        const val FAB_ACTION_EDIT_SUBCATEGORY = 4
     }
 
     /**

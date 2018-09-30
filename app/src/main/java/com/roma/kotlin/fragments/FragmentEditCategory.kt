@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MenuInflater
+import android.widget.TextView
 import android.widget.Toast
 // use kotlin extension
 import kotlinx.android.synthetic.main.fragment_add_category.editCategoryName
@@ -27,6 +28,7 @@ class FragmentEditCategory(val category: Category) : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle)
         setHasOptionsMenu(true)
     }
 
@@ -36,6 +38,7 @@ class FragmentEditCategory(val category: Category) : DialogFragment() {
         val context = context ?: return view
         val factory = InjectorUtils.provideCategoryListViewModelFactory(context)
         viewModel = ViewModelProviders.of(this, factory).get(CategoryListViewModel::class.java)
+        view.findViewById<TextView>(R.id.editCategoryName).setText(category.name)
         return view
     }
 
@@ -48,12 +51,21 @@ class FragmentEditCategory(val category: Category) : DialogFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.getItemId()) {
             R.id.menu_button_save -> {
-                // TODO save category
+                // TODO save subcategory
                 onSavePressed()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * @see https://github.com/lgvalle/Material-Animations
+     */
+    private fun setupWindowAnimations() {
+//        val fade = Fade()
+//        fade.setDuration(100)
+//        acitivity.setEnterTransition(fade)
     }
 
     fun onSavePressed() {
@@ -79,7 +91,7 @@ class FragmentEditCategory(val category: Category) : DialogFragment() {
             }
             if (!duplicated) {
                 category.name = txt
-                viewModel.addCategory(category)
+                viewModel.updateCategory(category)
                 Toast.makeText(activity, "saved", Toast.LENGTH_SHORT).show()
                 listener?.onCloseDialogInteraction()
                 dismiss()

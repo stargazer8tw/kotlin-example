@@ -1,40 +1,39 @@
 package com.roma.kotlin.fragments
 
-import android.content.Context
 import android.util.Log
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.roma.kotlin.R
-import com.roma.kotlin.db.obj.Category
+import com.roma.kotlin.db.obj.SubCategory
 import com.roma.kotlin.fragments.helper.SwipeAndDragHelper
-import kotlinx.android.synthetic.main.fragment_category.view.*
 import java.util.Collections
 import android.view.MotionEvent
+import kotlinx.android.synthetic.main.fragment_subcategory.view.*
 
 /**
  * fallback to use RecyclerView.Adapter instead of ListAdapter
  * @see https://android.devdon.com/archives/113
  */
-class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.ViewHolder>(),
+class SubCategoryRecyclerViewAdapter(val listener : ListActionListener<SubCategory>) : RecyclerView.Adapter<SubCategoryRecyclerViewAdapter.ViewHolder>(),
         SwipeAndDragHelper.ItemMoveSwipeListener {
 
-    private var mList : List<Category> = emptyList()
+    private var mList : List<SubCategory> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.fragment_category, parent, false)
+                .inflate(R.layout.fragment_subcategory, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val category = mList[position]
+        val item = mList[position]
         holder.apply {
-            bind(listener, category)
-            itemView.tag = category
+            bind(listener, item)
+            itemView.tag = item
             /** @see https://www.techotopia.com/index.php/Kotlin_-_Android_Touch_and_Multi-touch_Event_Handling */
-            itemView.image_reorder_category.setOnTouchListener { v: View, m: MotionEvent ->
+            itemView.image_reorder_subcategory.setOnTouchListener { v: View, m: MotionEvent ->
                 val action = m.actionMasked
                 when (action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -43,9 +42,6 @@ class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) :
                 }
                 true
             }
-            // open subcategory list fragment
-            itemView.image_open_subcategory.setOnClickListener { listener.onItemClick(FragmentCategory.ACTION_LIST_SUBCATEGORY, category) }
-            itemView.image_add_subcategory.setOnClickListener { listener.onItemClick(FragmentCategory.ACTION_ADD_SUBCATEGORY, category) }
         }
     }
 
@@ -53,7 +49,7 @@ class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) :
         return mList.size
     }
 
-    fun updateList(newList : List<Category>) {
+    fun updateList(newList : List<SubCategory>) {
         // fast simple first insert
         if (mList.isEmpty()) {
             mList = newList
@@ -64,9 +60,9 @@ class CategoryRecyclerViewAdapter(val listener : ListActionListener<Category>) :
     }
 
     class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        fun bind(mListener: ListActionListener<Category>, item: Category) {
-            mView.category_name.text = item.name
-            mView.setOnClickListener { mListener.onItemClick(FragmentCategory.ACTION_EDIT_CATEGORY, item) }
+        fun bind(mListener: ListActionListener<SubCategory>, item: SubCategory) {
+            mView.subcategory_name.text = item.name
+            mView.setOnClickListener { mListener.onItemClick(FragmentCategory.ACTION_EDIT_CATEGORY , item) }
             Log.d("add on click listener", "$mView , $item.seq -> $item.name")
         }
     }
