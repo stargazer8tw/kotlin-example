@@ -89,7 +89,7 @@ class FragmentCategory : Fragment(), ListActionListener<Category> {
 
     override fun onDragComplete(categories: List<Category>) : Boolean {
         categories.forEach {
-            viewModel.addCategory(it)
+            viewModel.updateCategory(it)
         }
         return true
     }

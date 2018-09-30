@@ -6,6 +6,7 @@ import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import android.arch.persistence.room.Delete
+import android.arch.persistence.room.Update
 import android.arch.persistence.room.Transaction
 
 import com.roma.kotlin.db.obj.Category
@@ -44,7 +45,10 @@ interface CategoryDao {
     @Query("SELECT * FROM $TBL_CATEGORY WHERE $COL_NAME=:name")
     fun getCategory(name: String):Category
 
-    // https://codelabs.developers.google.com/codelabs/android-room-with-a-view/index.html?index=..%2F..%2Findex#4
+    /**
+     * OnConflictStrategy.REPLACE will cause relation data deleted
+     * @see https://codelabs.developers.google.com/codelabs/android-room-with-a-view/index.html?index=..%2F..%2Findex#4
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(category: Category)
 
@@ -57,4 +61,9 @@ interface CategoryDao {
     @Delete
     fun delete(subcategory: SubCategory)
 
+    @Update
+    fun update(category: Category)
+
+    @Update
+    fun update(subcategory: SubCategory)
 }

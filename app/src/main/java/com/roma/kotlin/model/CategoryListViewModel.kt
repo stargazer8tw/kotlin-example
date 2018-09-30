@@ -41,6 +41,10 @@ class CategoryListViewModel(private val categoryDao: CategoryDao) : ViewModel() 
         addAsynTask(categoryDao).execute(category)
     }
 
+    fun updateCategory(category: Category) {
+        updateAsynTask(categoryDao).execute(category)
+    }
+
     fun deleteCategory(category: Category) {
         deleteAsynTask(categoryDao).execute(category)
     }
@@ -49,6 +53,15 @@ class CategoryListViewModel(private val categoryDao: CategoryDao) : ViewModel() 
         private var repo = categoryDao
         override fun doInBackground(vararg params: Category): Void? {
             repo.insert(params[0])
+            return null
+        }
+
+    }
+
+    class updateAsynTask(categoryDao: CategoryDao) : AsyncTask<Category, Void, Void>() {
+        private var repo = categoryDao
+        override fun doInBackground(vararg params: Category): Void? {
+            repo.update(params[0])
             return null
         }
 
@@ -74,6 +87,10 @@ class CategoryListViewModel(private val categoryDao: CategoryDao) : ViewModel() 
         addAsynTaskSC(categoryDao).execute(item)
     }
 
+    fun updateSubCategory(item: SubCategory) {
+        updateAsynTaskSC(categoryDao).execute(item)
+    }
+
     fun deleteSubCategory(item: SubCategory) {
         deleteAsynTaskSC(categoryDao).execute(item)
     }
@@ -84,7 +101,14 @@ class CategoryListViewModel(private val categoryDao: CategoryDao) : ViewModel() 
             repo.insert(params[0])
             return null
         }
+    }
 
+    class updateAsynTaskSC(categoryDao: CategoryDao) : AsyncTask<SubCategory, Void, Void>() {
+        private var repo = categoryDao
+        override fun doInBackground(vararg params: SubCategory): Void? {
+            repo.update(params[0])
+            return null
+        }
     }
 
     class deleteAsynTaskSC(categoryDao: CategoryDao) : AsyncTask<SubCategory, Void, Void>() {
