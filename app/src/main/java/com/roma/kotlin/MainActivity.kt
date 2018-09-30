@@ -65,9 +65,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun onFullscreenDialog(dialog : DialogFragment) {
         setDrawerState(false)
-        fab.hide()
         replaceFragment(dialog, R.id.fragment_container)
-        drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+        when (fabAction) {
+            FAB_ACTION_ADD_CATEGORY, FAB_ACTION_EDIT_CATEGORY, FAB_ACTION_EDIT_SUBCATEGORY -> {
+                drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+                fab.hide()
+            }
+            FAB_ACTION_ADD_SUBCATEGORY -> {
+                drawerToggle.setHomeAsUpIndicator(R.drawable.ic_menu_close)
+                fab.hide()
+            }
+        }
         // see comment https://stackoverflow.com/questions/37965231/return-to-default-onclicklistener-navigation-drawer-icon
         // set on click listener on toggle action instead of toobar
         drawerToggle.setToolbarNavigationClickListener {
@@ -144,7 +152,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show()
         enableDrawer()
         when (fabAction) {
-            FAB_ACTION_ADD_CATEGORY, FAB_ACTION_EDIT_CATEGORY -> {
+            FAB_ACTION_ADD_CATEGORY, FAB_ACTION_EDIT_CATEGORY, FAB_ACTION_ADD_SUBCATEGORY, FAB_ACTION_EDIT_SUBCATEGORY -> {
                 replaceFragment(FragmentCategory(), R.id.fragment_container)
                 fabAction = FAB_ACTION_ADD_CATEGORY
             }
@@ -170,6 +178,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         const val FAB_ACTION_ADD_CATEGORY = 1
         const val FAB_ACTION_EDIT_CATEGORY = 2
         const val FAB_ACTION_ADD_SUBCATEGORY = 3
+        const val FAB_ACTION_EDIT_SUBCATEGORY = 4
     }
 
     /**

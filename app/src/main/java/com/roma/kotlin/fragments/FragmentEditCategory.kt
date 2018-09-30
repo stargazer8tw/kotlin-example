@@ -28,6 +28,7 @@ class FragmentEditCategory(val category: Category) : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle)
         setHasOptionsMenu(true)
     }
 
@@ -50,12 +51,21 @@ class FragmentEditCategory(val category: Category) : DialogFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.getItemId()) {
             R.id.menu_button_save -> {
-                // TODO save category
+                // TODO save subcategory
                 onSavePressed()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * @see https://github.com/lgvalle/Material-Animations
+     */
+    private fun setupWindowAnimations() {
+//        val fade = Fade()
+//        fade.setDuration(100)
+//        acitivity.setEnterTransition(fade)
     }
 
     fun onSavePressed() {
